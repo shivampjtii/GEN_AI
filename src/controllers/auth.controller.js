@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const blacklistModel = require("../models/blacklist.model");
 
 async function registerController(req,res){
     const { username, email, password } = req.body;
@@ -51,14 +52,14 @@ async function registerController(req,res){
 
 async function loginController(req,res){
     const {username, email, password} = req.body;
-    if(!username || !email || !password){
+    if(!email || !password){
         return res.status(401).json({
             message: "All fields are required"
         })
     }
     
     const user = await userModel.findOne({
-        $and:[{email},{username}]
+        $or:[{email},{username}]
     })
 
     if(!user){
@@ -91,7 +92,28 @@ async function loginController(req,res){
     })
 }
 
+async function logoutController(req,res){
+    const token = req.cookies.token;
+    if(!token){
+        return res.status(401).json({
+            message: "Token is required"
+        })
+    }
+
+    const blacklistToken = await blacklistModel.create({
+        token
+    })
+
+    res.clearCookie("token");
+
+
+    res.status(200).json({
+        message: "Logout"
+    })
+}
+
 module.exports = {
     registerController,
-    loginController
+    loginController,
+    logoutController
 }
