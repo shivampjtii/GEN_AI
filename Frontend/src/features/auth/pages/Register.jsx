@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router';
+import { useNavigate,Link } from 'react-router';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ const Register = () => {
         </div>
         <button className='button primary-button'>Sign up</button>
       </form>
+      <p>Already have an account? <Link to={"/login"}>Login</Link> </p>
     </div>
     </main>
   )
